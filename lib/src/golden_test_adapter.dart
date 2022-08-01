@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:alchemist/alchemist.dart';
-import 'package:alchemist/src/blocked_text_image.dart';
-import 'package:alchemist/src/pumps.dart';
 import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -222,12 +220,10 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required bool obscureFont,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
-    required ThemeData theme,
     required Widget widget,
     required CoreWidgetWrapper? coreWrapper,
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
-    required Widget widget,
   }) async {
     tester.binding.window.devicePixelRatioTestValue = 1.0;
     tester.binding.window.platformDispatcher.textScaleFactorTestValue =
@@ -241,26 +237,38 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
               bundle: TestAssetBundle(),
               child: widget,
             ),
-            rootKey,
+            null,
           ) ??
-          MaterialApp(
-            key: rootKey,
-            theme: theme.stripTextPackages(),
-            debugShowCheckedModeBanner: false,
-            supportedLocales: const [Locale('en')],
-            builder: (context, _) => DefaultAssetBundle(
+          FlutterGoldenTestWrapper(
+            obscureFont: obscureFont,
+            globalConfigTheme: globalConfigTheme,
+            variantConfigTheme: variantConfigTheme,
+            child: DefaultAssetBundle(
               bundle: TestAssetBundle(),
               child: Material(
                 type: MaterialType.transparency,
                 child: Align(
                   alignment: Alignment.topLeft,
-                  child: ColoredBox(
-                    color: theme.colorScheme.background,
-                    child: Padding(
-                      key: childKey,
-                      padding: const EdgeInsets.all(8),
-                      child: widget,
-                    ),
+                  child: Builder(
+                    builder: (context) {
+                      return ColoredBox(
+                        color: Theme.of(context).colorScheme.background,
+                        child: OverflowBox(
+                          alignment: Alignment.topLeft,
+                          minWidth: constraints.minWidth,
+                          minHeight: constraints.minHeight,
+                          maxWidth: constraints.maxWidth,
+                          maxHeight: constraints.maxHeight,
+                          child: Center(
+                            child: Padding(
+                              key: childKey,
+                              padding: const EdgeInsets.all(8),
+                              child: widget,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),

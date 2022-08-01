@@ -261,9 +261,9 @@ void main() {
           await adapter.pumpGoldenTest(
             tester: tester,
             textScaleFactor: 1,
+            globalConfigTheme: ThemeData.light(),
             constraints: const BoxConstraints(),
             obscureFont: false,
-            globalConfigTheme: null,
             variantConfigTheme: null,
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
@@ -279,19 +279,20 @@ void main() {
         'sets surface size to constraints '
         'when constraints are tight',
         (tester) async {
-          final rootKey = FlutterGoldenTestAdapter.rootKey;
+          final rootKey = FlutterGoldenTestAdapter.childKey;
           const providedSize = Size(1000, 1000);
 
           await adapter.pumpGoldenTest(
             tester: tester,
-            rootKey: rootKey,
             textScaleFactor: 1,
             constraints: BoxConstraints.tight(providedSize),
-            theme: ThemeData.light(),
+            globalConfigTheme: ThemeData.light(),
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
             coreWrapper: null,
+            obscureFont: false,
+            variantConfigTheme: null,
           );
 
           expect(tester.binding.window.physicalSize, providedSize);
@@ -308,11 +309,11 @@ void main() {
           final groupKey = FlutterGoldenTestAdapter.childKey;
 
           await adapter.pumpGoldenTest(
+            globalConfigTheme: ThemeData.light(),
             tester: tester,
             textScaleFactor: 1,
             constraints: const BoxConstraints(),
             obscureFont: false,
-            globalConfigTheme: null,
             variantConfigTheme: null,
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
@@ -323,9 +324,6 @@ void main() {
           final targetSize = tester.getSize(find.byKey(groupKey));
 
           expect(tester.binding.window.physicalSize, targetSize);
-
-          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
-          expect(rootWidgetSize, targetSize);
         },
       );
 
@@ -333,24 +331,24 @@ void main() {
         'does not resize surface to a '
         'smaller size than the minimum size',
         (tester) async {
-          final rootKey = FlutterGoldenTestAdapter.rootKey;
           final groupKey = FlutterGoldenTestAdapter.childKey;
 
           const minSize = Size(1000, 1000);
 
           await adapter.pumpGoldenTest(
+            globalConfigTheme: ThemeData.light(),
             tester: tester,
-            rootKey: rootKey,
             textScaleFactor: 1,
             constraints: BoxConstraints(
               minWidth: minSize.width,
               minHeight: minSize.height,
             ),
-            theme: ThemeData.light(),
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
             coreWrapper: null,
+            obscureFont: false,
+            variantConfigTheme: null,
           );
 
           final groupSize = tester.getSize(find.byKey(groupKey));
@@ -367,9 +365,6 @@ void main() {
           }
 
           expect(tester.binding.window.physicalSize, minSize);
-
-          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
-          expect(rootWidgetSize, minSize);
         },
       );
 
@@ -377,23 +372,24 @@ void main() {
         'does not resize surface to a '
         'larger size than the maximum size',
         (tester) async {
-          final rootKey = FlutterGoldenTestAdapter.rootKey;
+          final rootKey = FlutterGoldenTestAdapter.childKey;
 
           const maxSize = Size(150, 150);
 
           await adapter.pumpGoldenTest(
+            globalConfigTheme: ThemeData.light(),
             tester: tester,
-            rootKey: rootKey,
             textScaleFactor: 1,
             constraints: BoxConstraints(
               maxWidth: maxSize.width,
               maxHeight: maxSize.height,
             ),
-            theme: ThemeData.light(),
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
             coreWrapper: null,
+            variantConfigTheme: null,
+            obscureFont: false,
           );
 
           expect(tester.binding.window.physicalSize, maxSize);
