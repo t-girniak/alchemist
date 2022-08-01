@@ -1,3 +1,4 @@
+import 'package:alchemist/src/golden_test.dart';
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/interactions.dart';
 import 'package:alchemist/src/pumps.dart';
@@ -29,6 +30,7 @@ abstract class GoldenTestRunner {
     required Widget widget,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
+    CoreWidgetWrapper? coreWrapper,
     bool forceUpdate = false,
     bool obscureText = false,
     bool renderShadows = false,
@@ -55,6 +57,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     required Widget widget,
     ThemeData? globalConfigTheme,
     ThemeData? variantConfigTheme,
+    CoreWidgetWrapper? coreWrapper,
     bool forceUpdate = false,
     bool obscureText = false,
     bool renderShadows = false,
@@ -85,6 +88,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
         variantConfigTheme: variantConfigTheme,
         pumpBeforeTest: pumpBeforeTest,
         pumpWidget: pumpWidget,
+        coreWrapper: coreWrapper,
         widget: widget,
       );
 

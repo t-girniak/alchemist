@@ -9,6 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 
+/// The CoreWidgetWrapper function, used for wrapping the base of golden test 
+/// and replacing the default MaterialApp wrapper
+typedef CoreWidgetWrapper = Widget Function(Widget child, Key? key);
+
 /// Default golden test runner which uses the flutter test framework.
 const defaultGoldenTestRunner = FlutterGoldenTestRunner();
 GoldenTestRunner _goldenTestRunner = defaultGoldenTestRunner;
@@ -70,6 +74,10 @@ Future<void> loadFonts() async {
 /// The [fileName] is the name of the file that will be used to store the
 /// golden image under the `goldens` directory. This name should be unique, and
 /// may not contain an extension (such as `.png`).
+/// 
+/// The [coreWrapper] is [CoreWidgetWrapper] function, which wraps 
+/// the base of the golden test. If not null, it replaces default 
+/// MaterialApp wrapper. If null, the default MaterialApp wrapper will be used.
 ///
 /// The provided [builder] builds the widget under test.
 /// Usually, it creates multiple scenarios using [GoldenTestGroup]
@@ -127,6 +135,7 @@ Future<void> loadFonts() async {
 Future<void> goldenTest(
   String description, {
   required String fileName,
+  CoreWidgetWrapper? coreWrapper,
   bool skip = false,
   List<String> tags = const ['golden'],
   double textScaleFactor = 1.0,
@@ -166,6 +175,7 @@ Future<void> goldenTest(
           fileName,
           variantConfig.environmentName,
         ),
+        coreWrapper: coreWrapper,
         widget: builder(),
         globalConfigTheme: config.theme,
         variantConfigTheme: variantConfig.theme,

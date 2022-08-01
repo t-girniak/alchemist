@@ -268,6 +268,7 @@ void main() {
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
+            coreWrapper: null,
           );
 
           expect(find.byType(GoldenTestGroup), findsOneWidget);
@@ -275,7 +276,34 @@ void main() {
       );
 
       testWidgets(
-        'resizes surface to fit the tested widget',
+        'sets surface size to constraints '
+        'when constraints are tight',
+        (tester) async {
+          final rootKey = FlutterGoldenTestAdapter.rootKey;
+          const providedSize = Size(1000, 1000);
+
+          await adapter.pumpGoldenTest(
+            tester: tester,
+            rootKey: rootKey,
+            textScaleFactor: 1,
+            constraints: BoxConstraints.tight(providedSize),
+            theme: ThemeData.light(),
+            pumpBeforeTest: onlyPumpAndSettle,
+            pumpWidget: onlyPumpWidget,
+            widget: buildGroup(),
+            coreWrapper: null,
+          );
+
+          expect(tester.binding.window.physicalSize, providedSize);
+
+          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
+          expect(rootWidgetSize, providedSize);
+        },
+      );
+
+      testWidgets(
+        'attempts to resize surface to fit '
+        'the group when constraints are loose',
         (tester) async {
           final groupKey = FlutterGoldenTestAdapter.childKey;
 
@@ -289,11 +317,89 @@ void main() {
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
+            coreWrapper: null,
           );
 
           final targetSize = tester.getSize(find.byKey(groupKey));
 
           expect(tester.binding.window.physicalSize, targetSize);
+
+          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
+          expect(rootWidgetSize, targetSize);
+        },
+      );
+
+      testWidgets(
+        'does not resize surface to a '
+        'smaller size than the minimum size',
+        (tester) async {
+          final rootKey = FlutterGoldenTestAdapter.rootKey;
+          final groupKey = FlutterGoldenTestAdapter.childKey;
+
+          const minSize = Size(1000, 1000);
+
+          await adapter.pumpGoldenTest(
+            tester: tester,
+            rootKey: rootKey,
+            textScaleFactor: 1,
+            constraints: BoxConstraints(
+              minWidth: minSize.width,
+              minHeight: minSize.height,
+            ),
+            theme: ThemeData.light(),
+            pumpBeforeTest: onlyPumpAndSettle,
+            pumpWidget: onlyPumpWidget,
+            widget: buildGroup(),
+            coreWrapper: null,
+          );
+
+          final groupSize = tester.getSize(find.byKey(groupKey));
+          // Make sure the test is set up properly so that the logic can be
+          // asserted correctly. This test is useless if the group's size is
+          // larger than the minimum size.
+          if (groupSize.width > minSize.width ||
+              groupSize.height > minSize.height) {
+            fail(
+              'The size of the rendered group is larger than the minimum '
+              'size constraint passed to the pumpGoldenTest function, '
+              'making this test useless.',
+            );
+          }
+
+          expect(tester.binding.window.physicalSize, minSize);
+
+          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
+          expect(rootWidgetSize, minSize);
+        },
+      );
+
+      testWidgets(
+        'does not resize surface to a '
+        'larger size than the maximum size',
+        (tester) async {
+          final rootKey = FlutterGoldenTestAdapter.rootKey;
+
+          const maxSize = Size(150, 150);
+
+          await adapter.pumpGoldenTest(
+            tester: tester,
+            rootKey: rootKey,
+            textScaleFactor: 1,
+            constraints: BoxConstraints(
+              maxWidth: maxSize.width,
+              maxHeight: maxSize.height,
+            ),
+            theme: ThemeData.light(),
+            pumpBeforeTest: onlyPumpAndSettle,
+            pumpWidget: onlyPumpWidget,
+            widget: buildGroup(),
+            coreWrapper: null,
+          );
+
+          expect(tester.binding.window.physicalSize, maxSize);
+
+          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
+          expect(rootWidgetSize, maxSize);
         },
       );
 
@@ -308,6 +414,7 @@ void main() {
           pumpBeforeTest: onlyPumpAndSettle,
           pumpWidget: onlyPumpWidget,
           widget: buildGroup(),
+          coreWrapper: null,
         );
 
         expect(tester.binding.window.textScaleFactor, 2.0);
@@ -327,6 +434,7 @@ void main() {
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
+            coreWrapper: null,
           );
 
           expect(find.byType(FlutterGoldenTestWrapper), findsOneWidget);
@@ -368,6 +476,7 @@ void main() {
           pumpBeforeTest: (_) async => pumpBeforeTestCalled = true,
           pumpWidget: onlyPumpWidget,
           widget: buildGroup(),
+          coreWrapper: null,
         );
 
         expect(pumpBeforeTestCalled, isTrue);
@@ -388,6 +497,7 @@ void main() {
             pumpWidgetCalled = true;
           },
           widget: buildGroup(),
+          coreWrapper: null,
         );
 
         expect(pumpWidgetCalled, isTrue);

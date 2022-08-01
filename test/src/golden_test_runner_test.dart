@@ -60,6 +60,7 @@ void main() {
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           widget: any(named: 'widget'),
+          coreWrapper: any(named: 'coreWrapper'),
         ),
       ).thenAnswer((_) async {});
 
@@ -95,6 +96,87 @@ void main() {
         ),
         throwsAssertionError,
       );
+    });
+
+    testWidgets('invokes everything correctly', (tester) async {
+      const themeColor = Colors.blue;
+      final theme = ThemeData.light().copyWith(
+        primaryColor: themeColor,
+      );
+      await goldenTestRunner.run(
+        tester: tester,
+        goldenPath: 'path/to/golden',
+        widget: Container(),
+        theme: theme,
+        whilePerforming: interaction,
+        obscureText: true,
+      );
+
+      expect(interactionCalled, isTrue);
+      expect(cleanupCalled, isTrue);
+      expect(goldenFileExpectationCalled, isTrue);
+      expect(matcherInvocationCalled, isTrue);
+
+      final capturedTheme = verify(
+        () => adapter.pumpGoldenTest(
+          rootKey: any(named: 'rootKey'),
+          tester: any(named: 'tester'),
+          textScaleFactor: any(named: 'textScaleFactor'),
+          constraints: any(named: 'constraints'),
+          theme: captureAny(named: 'theme'),
+          pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
+          widget: any(named: 'widget'),
+          coreWrapper: any(named: 'coreWrapper'),
+        ),
+      ).captured.first as ThemeData;
+
+      expect(
+        capturedTheme,
+        isA<ThemeData>().having(
+          (theme) => theme.primaryColor,
+          'primaryColor',
+          themeColor,
+        ),
+      );
+
+      expect(
+        capturedTheme,
+        isA<ThemeData>().having(
+          (theme) => theme.textTheme.bodyText1!.fontFamily,
+          'textTheme.bodyText1!.fontFamily',
+          obscuredTextFontFamily,
+        ),
+      );
+    });
+
+    testWidgets('invokes everything with defaults', (tester) async {
+      await goldenTestRunner.run(
+        tester: tester,
+        goldenPath: 'path/to/golden',
+        widget: Container(),
+      );
+
+      expect(interactionCalled, isFalse);
+      expect(cleanupCalled, isFalse);
+      expect(goldenFileExpectationCalled, isTrue);
+      expect(matcherInvocationCalled, isTrue);
+
+      final capturedTheme = verify(
+        () => adapter.pumpGoldenTest(
+          rootKey: any(named: 'rootKey'),
+          tester: any(named: 'tester'),
+          textScaleFactor: any(named: 'textScaleFactor'),
+          constraints: any(named: 'constraints'),
+          theme: captureAny(named: 'theme'),
+          pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
+          widget: any(named: 'widget'),
+          coreWrapper: any(named: 'coreWrapper'),
+        ),
+      ).captured.first as ThemeData;
+
+      expect(capturedTheme, equals(ThemeData.light()));
     });
 
     testWidgets('throws when matcher fails', (tester) async {
