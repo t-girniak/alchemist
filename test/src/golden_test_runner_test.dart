@@ -51,6 +51,7 @@ void main() {
 
       when(
         () => goldenTestAdapter.pumpGoldenTest(
+          coreWrapper: null,
           rootKey: any(named: 'rootKey'),
           tester: any(named: 'tester'),
           textScaleFactor: any(named: 'textScaleFactor'),
@@ -156,6 +157,7 @@ void main() {
       final originalSize = tester.binding.window.physicalSize;
       when(
         () => goldenTestAdapter.pumpGoldenTest(
+          coreWrapper: null,
           rootKey: any(named: 'rootKey'),
           tester: any(named: 'tester'),
           textScaleFactor: any(named: 'textScaleFactor'),

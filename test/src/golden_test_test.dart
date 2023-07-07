@@ -44,6 +44,7 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
     required Widget widget,
+    required CoreWidgetWrapper? coreWrapper,
   }) async {}
 
   @override

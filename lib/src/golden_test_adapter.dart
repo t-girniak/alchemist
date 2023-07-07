@@ -166,6 +166,7 @@ abstract class GoldenTestAdapter {
     required ThemeData? variantConfigTheme,
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
+    required CoreWidgetWrapper? coreWrapper,
     required Widget widget,
   });
 
@@ -229,6 +230,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required ThemeData? variantConfigTheme,
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
+    required CoreWidgetWrapper? coreWrapper,
     required Widget widget,
   }) async {
     tester.binding.window.devicePixelRatioTestValue = 1.0;
@@ -237,7 +239,15 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 
     await pumpWidget(
       tester,
-      FlutterGoldenTestWrapper(
+      coreWrapper?.call(
+            DefaultAssetBundle(
+              key: childKey,
+              bundle: TestAssetBundle(),
+              child: widget,
+            ),
+            rootKey,
+          ) ??
+          FlutterGoldenTestWrapper(
         key: rootKey,
         obscureFont: obscureFont,
         globalConfigTheme: globalConfigTheme,

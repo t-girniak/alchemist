@@ -11,6 +11,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 
+/// The CoreWidgetWrapper function, used for wrapping the base of golden test
+/// and replacing the default MaterialApp wrapper
+typedef CoreWidgetWrapper = Widget Function(Widget child, Key? key);
+
 /// Default golden test runner which uses the flutter test framework.
 const defaultGoldenTestRunner = FlutterGoldenTestRunner();
 GoldenTestRunner _goldenTestRunner = defaultGoldenTestRunner;
@@ -139,6 +143,7 @@ Future<void> goldenTest(
   BoxConstraints constraints = const BoxConstraints(),
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
   PumpWidget pumpWidget = onlyPumpWidget,
+  CoreWidgetWrapper? coreWrapper,
   Interaction? whilePerforming,
   required ValueGetter<Widget> builder,
 }) async {
@@ -172,6 +177,7 @@ Future<void> goldenTest(
           fileName,
           variantConfig.environmentName,
         ),
+        coreWrapper: coreWrapper,
         widget: builder(),
         globalConfigTheme: config.theme,
         variantConfigTheme: variantConfig.theme,
