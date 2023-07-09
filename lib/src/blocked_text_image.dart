@@ -258,4 +258,22 @@ class BlockedTextCanvasAdapter implements Canvas {
 
   @override
   void translate(double dx, double dy) => parent.translate(dx, dy);
+
+  @override
+  ui.Rect getDestinationClipBounds() {
+    throw UnimplementedError();
+  }
+
+  @override
+  ui.Rect getLocalClipBounds() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Float64List getTransform() {
+    throw UnimplementedError();
+  }
+
+  @override
+  void restoreToCount(int count) {}
 }
